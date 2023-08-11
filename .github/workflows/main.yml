@@ -7,7 +7,7 @@ name: storageaccount
 jobs:
 
   CreateAzureVM:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
     # Checkout code from repo
