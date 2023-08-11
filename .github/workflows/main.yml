@@ -1,23 +1,18 @@
+on: [workflow_dispatch]
+name: DeployAzureVM
+jobs:
+  CreateAzureVM:
+    runs-on: windows-latest
+    
+    steps:
+    # Checkout code from repo
+    - name: checkout repo
+      uses: actions/checkout@v1
 
-name: Run Azure Login with OpenID Connect and PowerShell
-on: [push]
-
-permissions:
-      id-token: write
-      contents: read
-      
-jobs: 
-  Windows-latest:
-      runs-on: windows-latest
-      steps:
-        - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-          uses: azure/login@v1
-          with:
-            creds : ${{ secrets.AZURE_CREDENTIALS }} 
-            enable-AzPSSession: true
-
-        - name: 'Get resource group with PowerShell action'
-          uses: azure/powershell@v1
-          with:
-             inlineScript: |
-               New-AzResourceGroup -Name 'skywave-rg' -Location 'South India'
+    # Run powershell script to create VM
+    - name: RunPowershellScriptFromRepo
+      env: #Set secrets as environment variables
+        creds : ${{ secrets.AZURE_CREDENTIALS }}
+        AZURE_SUBSCRIPTION_NAME: ${{ secrets.AZURE_SUBSCRIPTION_NAME }}
+      run: .\create-vm-azure.ps1
+      shell: pwsh
