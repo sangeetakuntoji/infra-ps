@@ -14,5 +14,7 @@ jobs:
       env: #Set secrets as environment variables
         creds : ${{ secrets.AZURE_CREDENTIALS }}
         AZURE_SUBSCRIPTION_NAME: ${{ secrets.AZURE_SUBSCRIPTION_NAME }}
+        azPSVersion: latest
       run: .\storageaccount.ps1
       shell: pwsh
+      
