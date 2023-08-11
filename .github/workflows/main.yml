@@ -10,16 +10,23 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # Checkout code from repo
-    - name: checkout repo
-      uses: actions/checkout@v1
-
-    # Run powershell script to create VM
-    - name: RunPowershellScriptFromRepo
-      env: #Set secrets as environment variables
-        SP_CLIENT_ID: ${{ secrets.SP_CLIENT_ID }}
-        SP_CLIENT_SECRET: ${{ secrets.SP_CLIENT_SECRET }}
-        SP_TENANT_ID: ${{ secrets.SP_TENANT_ID }}
-        AZURE_SUBSCRIPTION_NAME: ${{ secrets.AZURE_SUBSCRIPTION_NAME }}
-      run: ./storageaccount.ps1
-      shell: pwsh
+    - name: Azure login
+      id: login
+      uses: azure/login@v1.4.3
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Prepare artifact
+      shell: bash
+      run: |
+        az group create --name skywave-prod --location westus
+        az storage account create --resource-group skywave-prod --name skywave-prod-tf-state --location westus --sku Standard_LRS --kind StorageV2
+        az storage container create -n tf-state --public-access blob --account-name skywave-prod-tf-state
+        
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear
