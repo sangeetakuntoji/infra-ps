@@ -1,3 +1,13 @@
+az login `
+    --service-principal `
+    --username $Env:SP_CLIENT_ID `
+    --password $Env:SP_CLIENT_SECRET `
+    --tenant $Env:SP_TENANT_ID
+Write-Output "Done"
+
+# Select Azure subscription
+az account set `
+    --subscription $Env:AZURE_SUBSCRIPTION_NAME
 # RG creation
 
 New-AzResourceGroup -Name 'skywave-rg' -Location 'South India'
