@@ -1,18 +1,25 @@
- 
-# RG creation
+name: storage account
 
-New-AzResourceGroup -Name 'skywave-rg' -Location 'South India'
+on:
+    push:
+        branches: [ main ]
 
-# Storage Account creation
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-New-AzStorageAccount -ResourceGroupName 'skywave-rg' -Name 'skywavestorageaccount' -Location 'South India' -SkuName Standard_LRS -Kind StorageV2 -AssignIdentity 
-  
-## Function to create the storage container  
-  
- $storageAcc=Get-AzStorageAccount -ResourceGroupName 'skywave-rg' -Name 'skywavestorageaccount'      
-    ## Get the storage account context  
-    $ctx=$storageAcc.Context      
- 
-    
-       New-AzStorageContainer -Name 'skywavecontainer' -Context $ctx -Permission Container  
-   
+    - name: Upload to blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az group create --name exampleGroup --location westus
+  # Azure logout
+    - name: logout
+      run: |
+            az logout
+      if: always()
