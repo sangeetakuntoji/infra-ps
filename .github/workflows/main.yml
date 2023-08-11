@@ -1,0 +1,26 @@
+name: storage account
+
+on:
+    push:
+        branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: create storage account
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+         New-AzResourceGroup -Name 'skywave-rg' -Location 'South India'
+         New-AzStorageAccount -ResourceGroupName 'skywave-rg' -Name 'skywavestorageaccount' -Location 'South India' -SkuName Standard_LRS -Kind StorageV2 -AssignIdentity 
+  # Azure logout
+    - name: logout
+      run: |
+            az logout
+      if: always()
