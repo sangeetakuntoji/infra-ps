@@ -12,7 +12,7 @@ az account set `
 
 New-AzResourceGroup -Name 'skywave-rg' -Location 'South India'
 
-# Storage Account creation
+# Storage Account 
 
 New-AzStorageAccount -ResourceGroupName 'skywave-rg' -Name 'skywavestorageaccount' -Location 'South India' -SkuName Standard_LRS -Kind StorageV2 -AssignIdentity 
   
