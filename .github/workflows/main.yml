@@ -1,20 +1,36 @@
-on: [workflow_dispatch]
-name: DeployAzureVM
-jobs:
-  CreateAzureVM:
-    runs-on: windows-latest
-    
-    steps:
-    # Checkout code from repo
-    - name: checkout repo
-      uses: actions/checkout@v1
 
-    # Run powershell script to create VM
-    - name: RunPowershellScriptFromRepo
-      env: #Set secrets as environment variables
-        creds : ${{ secrets.AZURE_CREDENTIALS }}
-        AZURE_SUBSCRIPTION_NAME: ${{ secrets.AZURE_SUBSCRIPTION_NAME }}
-        azPSVersion: latest
-      run: .\storageaccount.ps1
-      shell: pwsh
-      
+on:
+  workflow_dispatch:
+    inputs:
+      Environment:
+        type: choice
+        options:
+          - nonprd
+          - prd
+        description: "nonprd or prd environments"
+        required: true
+
+jobs:
+  execution:
+    name: Test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+
+      - name: Query and update
+        id: queryupdate
+        uses: azure/powershell@v1
+        with:
+          inlineScript: | 
+            storageaccount.ps1 -Environment ${{ github.event.inputs.Environment }}
+          azPSVersion: latest
