@@ -1,5 +1,5 @@
 resource "azurerm_static_site" "web" {
-  name                = "skywavestaticwebapp"
-  resource_group_name = "skywave-rg"
-  location            = "south india"
+  name                = "skywavestaticwebapp01"
+  resource_group_name = "skywave-prod"
+  location            = "westus"
 }
