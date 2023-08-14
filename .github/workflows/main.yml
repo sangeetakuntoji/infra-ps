@@ -6,7 +6,7 @@ name: storageaccount
 
 jobs:
 
-  CreateAzureVM:
+  Backend_storage:
     runs-on: ubuntu-latest
     
     steps:
